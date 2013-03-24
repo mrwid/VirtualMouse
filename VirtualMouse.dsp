@@ -96,6 +96,10 @@ SOURCE=.\initialize_ui.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\set_autorun.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\VirtualMouse.c
 # End Source File
 # Begin Source File
@@ -113,6 +117,10 @@ SOURCE=.\constant.h
 # Begin Source File
 
 SOURCE=.\initialize_ui.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\set_autorun.h
 # End Source File
 # Begin Source File
 

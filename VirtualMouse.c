@@ -1,7 +1,10 @@
 #include <windows.h>
 
 #include "wndproc.h"
+#include <commctrl.h>
 #include "resource.h"
+
+#pragma comment ( lib, "comctl32.lib")
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -29,6 +32,8 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine
 		MessageBox( NULL, TEXT("¥∞ø⁄¿‡◊¢≤· ß∞‹!"), TEXT("¥ÌŒÛ"), MB_OK | MB_ICONERROR );
 		return 0;
 	}
+	
+	InitCommonControls();
 
 	hwnd = CreateWindow(
 		szAppName, TEXT("–Èƒ‚ Û±Í"),

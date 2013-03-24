@@ -1,18 +1,20 @@
 #include "wndproc.h"
 #include "initialize_ui.h"
 #include "constant.h"
+#include "set_autorun.h"
 
 //////////////////////////////////////////////////////////////////////////
 
 //主窗口回调函数
 LRESULT CALLBACK WndProc( HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
-	static HWND hBtn[4];
+	static HWND hBtn[5];
 	LOGFONT		lf;
 	HDC			hdc;
 	PAINTSTRUCT ps;
 	char		btnLab[10];
 	HFONT		hFont;
+	HDC			hdcStatic;
 
 	strcpy( lf.lfFaceName, "Arial" );
 	lf.lfWidth			= 6;
@@ -27,18 +29,25 @@ LRESULT CALLBACK WndProc( HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam 
 
 	switch( message )
 	{
-	case WM_CREATE:
+	case WM_CREATE:						//创建创建时的相关初始化
 		regVirtualMouseHotKey( hwnd );
-		InitWndUI( hwnd, ((LPCREATESTRUCT)lParam)->hInstance, hBtn );
+		strcpy( lf.lfFaceName, "Times New Roman" );
+		lf.lfHeight = 16;
+		lf.lfWidth  = 8;
+		lf.lfWeight = FW_NORMAL;
+		hFont = CreateFontIndirect (&lf);
+		InitWndUI( hwnd, ((LPCREATESTRUCT)lParam)->hInstance, hBtn, hFont, lf );
+		if( checkAutorun() )
+			SendMessage( hBtn[3], BM_SETCHECK, 1, 0 );
 		return 0;
 
-	case WM_COMMAND:
+	case WM_COMMAND:					//处理按钮消息
 		dealWithBtnMsg( hwnd, wParam, hBtn );	return 0;
 
-	case WM_HOTKEY:
+	case WM_HOTKEY:						//处理热键消息
 		dealWithHotKey( hwnd, wParam );			return 0;
 
-	case WM_PAINT:
+	case WM_PAINT:						//处理重绘消息
 		hdc = BeginPaint (hwnd, &ps) ;
 		hFont = CreateFontIndirect (&lf);
 		SelectObject (hdc, hFont ) ;
@@ -48,7 +57,13 @@ LRESULT CALLBACK WndProc( HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam 
 		EndPaint (hwnd, &ps) ;
 		return 0;
 
-	case WM_DESTROY:
+	case WM_CTLCOLORSTATIC:				//处理超链接字体颜色
+        hdcStatic = (HDC) wParam;
+		SetTextColor(hdcStatic, RGB(0,0,255));
+		SetBkColor(hdcStatic, RGB(236, 233, 216));
+		return (INT_PTR) CreateSolidBrush( RGB(236, 233, 216) );
+
+	case WM_DESTROY:					//退出程序
 		GetWindowText( hBtn[0], btnLab, 10 );
 		if( strcmp( btnLab, "暂停模拟" ) == 0 )			//当热键没有被注销时
 		{
@@ -56,7 +71,7 @@ LRESULT CALLBACK WndProc( HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam 
 			UnregisterHotKey( hwnd, ID_HOT_WND_HIDE );	//注销主界面呼出热键
 			UnregisterHotKey( hwnd, ID_HOT_PAUSE );		//注销暂停\继续热键
 		}
-		PostQuitMessage( 0 );					return 0;
+		PostQuitMessage( 0 );		return 0;
 	}
 
 	return DefWindowProc( hwnd, message, wParam, lParam );
@@ -136,12 +151,12 @@ void dealWithHotKey( HWND hwnd, WPARAM wParam )
 
 	case ID_HOT_LEFT_CLICK:		//左击
 		mouse_event( MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0 );
-		mouse_event( MOUSEEVENTF_LEFTUP, 0, 0, 0, 0 );
+		mouse_event( MOUSEEVENTF_LEFTUP,   0, 0, 0, 0 );
 		break;
 
 	case ID_HOT_RIGHT_CLICK:	//右击
 		mouse_event( MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0 );
-		mouse_event( MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0 );
+		mouse_event( MOUSEEVENTF_RIGHTUP,   0, 0, 0, 0 );
 		break;
 
 	case ID_HOT_MIDDLE_UP:		//滚轮向上
@@ -152,14 +167,15 @@ void dealWithHotKey( HWND hwnd, WPARAM wParam )
 
 	case ID_HOT_MIDDLE_PRESS:	//中键击键
 		mouse_event( MOUSEEVENTF_MIDDLEDOWN, 0, 0, 0, 0 );
-		mouse_event( MOUSEEVENTF_MIDDLEUP, 0, 0, 0, 0 );
+		mouse_event( MOUSEEVENTF_MIDDLEUP,   0, 0, 0, 0 );
+		break;
 
 	case ID_HOT_WND_HIDE:		//呼出主界面
 		ShowWindow( hwnd, SW_SHOWNORMAL );
 		SetForegroundWindow(hwnd);	break;
 
 	case ID_HOT_PAUSE:			//暂停\继续热键
-		SendMessage( hwnd, WM_COMMAND, ID_BTN_PAUSE|BN_CLICKED, 0 );	break;
+		SendMessage( hwnd, WM_COMMAND, ID_BTN_PAUSE | BN_CLICKED, 0 );	break;
 	}
 	SetCursorPos( ptCorPos.x, ptCorPos.y );
 }
@@ -173,12 +189,12 @@ void dealWithBtnMsg( HWND hwnd,  WPARAM wParam, HWND *hBtn )
 
 	switch( LOWORD(wParam) )
 	{
-	case ID_BTN_HIDE:
+	case ID_BTN_HIDE:			//处理隐藏按钮消息
 		ShowWindow( hwnd, SW_MINIMIZE );		//先最小化
 		ShowWindow( hwnd, SW_HIDE );			//再隐藏
-		break;
+		return ;
 
-	case ID_BTN_PAUSE:
+	case ID_BTN_PAUSE:			//处理暂停\继续按钮消息
 		GetWindowText( hBtn[0], btnLab, 10 );
 		if( strcmp( btnLab, "暂停模拟" ) == 0 )
 		{
@@ -190,11 +206,19 @@ void dealWithBtnMsg( HWND hwnd,  WPARAM wParam, HWND *hBtn )
 			regVirtualMouseHotKey( hwnd );
 			SetWindowText( hBtn[0], TEXT("暂停模拟") );
 		}
-		break;
+		return ;
 
-	case ID_BTN_EXIT:
+	case ID_BTN_EXIT:			//处理退出模拟消息
 		SendMessage( hwnd, WM_DESTROY, 0, 0 );
-		break;
+		return ;
+
+	case ID_ID_AUTORUN:			//处理开机自启动消息
+		VirtualMouseAutorun( hBtn[3] );
+		return ;
+
+	case ID_ID_HYPERLINK:		//处理超链接消息
+		ShellExecute( NULL, "open", "http://www.cnblogs.com/mr-wid/", NULL, NULL, SW_SHOW );
+		return ;
 	}
 }
 
@@ -204,6 +228,7 @@ void dealWithBtnMsg( HWND hwnd,  WPARAM wParam, HWND *hBtn )
 void drawTipText( HDC hdc )
 {
 	int i = 1, x = 10, y = 30;
+
 	TCHAR szTip[][128] = {
 		TEXT("注意: 以下数字均指小键盘数字。"),
 		TEXT("________________________________________"),
