@@ -1,6 +1,8 @@
 #include <windows.h>
 
 #include "wndproc.h"
+#include "resource.h"
+
 //////////////////////////////////////////////////////////////////////////
 
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow )
@@ -15,7 +17,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine
 	wndclass.lpfnWndProc	= WndProc;
 	wndclass.hInstance		= hInstance;
 	wndclass.hCursor		= LoadCursor( NULL, IDC_ARROW );
-	wndclass.hIcon			= LoadIcon( NULL, IDI_APPLICATION );
+	wndclass.hIcon			= LoadIcon( hInstance, MAKEINTRESOURCE(IDI_ICON_LEFT) );
 	wndclass.cbClsExtra		= 0;
 	wndclass.cbWndExtra		= 0;
 	wndclass.hbrBackground	= CreateSolidBrush( RGB(236, 233, 216) );

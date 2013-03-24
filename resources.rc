@@ -53,6 +53,15 @@ END
 //
 
 1                       24      DISCARDABLE     "VirtualMouse.manifest"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON_LEFT           ICON    DISCARDABLE     "icon_lef.ico"
 #endif    // Chinese (ÖÐ¹ú) resources
 /////////////////////////////////////////////////////////////////////////////
 

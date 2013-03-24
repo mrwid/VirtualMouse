@@ -128,6 +128,10 @@ SOURCE=.\bin24.bin
 # End Source File
 # Begin Source File
 
+SOURCE=.\icon_lef.ico
+# End Source File
+# Begin Source File
+
 SOURCE=.\resources.rc
 # End Source File
 # End Group

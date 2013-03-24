@@ -8,25 +8,55 @@
 LRESULT CALLBACK WndProc( HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
 	static HWND hBtn[4];
+	LOGFONT		lf;
+	HDC			hdc;
+	PAINTSTRUCT ps;
+	char		btnLab[10];
+	HFONT		hFont;
+
+	strcpy( lf.lfFaceName, "Arial" );
+	lf.lfWidth			= 6;
+	lf.lfHeight			= 12;
+	lf.lfEscapement		= 0;
+	lf.lfOrientation	= 0;
+	lf.lfWeight			= FW_NORMAL;
+	lf.lfItalic			= 0;
+	lf.lfUnderline		= 0;
+	lf.lfStrikeOut		= 0;
+	lf.lfCharSet		= GB2312_CHARSET;
 
 	switch( message )
 	{
 	case WM_CREATE:
 		regVirtualMouseHotKey( hwnd );
 		InitWndUI( hwnd, ((LPCREATESTRUCT)lParam)->hInstance, hBtn );
-		break;
+		return 0;
 
 	case WM_COMMAND:
-		dealWithBtnMsg( hwnd, wParam );
-		break;
+		dealWithBtnMsg( hwnd, wParam, hBtn );	return 0;
 
 	case WM_HOTKEY:
-		dealWithHotKey( hwnd, wParam );
-		break;
+		dealWithHotKey( hwnd, wParam );			return 0;
+
+	case WM_PAINT:
+		hdc = BeginPaint (hwnd, &ps) ;
+		hFont = CreateFontIndirect (&lf);
+		SelectObject (hdc, hFont ) ;
+		SetBkColor( hdc, RGB(236, 233, 216) );
+		drawTipText( hdc );
+		DeleteObject( hFont );
+		EndPaint (hwnd, &ps) ;
+		return 0;
 
 	case WM_DESTROY:
-		PostQuitMessage( 0 );
-		return 0;
+		GetWindowText( hBtn[0], btnLab, 10 );
+		if( strcmp( btnLab, "暂停模拟" ) == 0 )			//当热键没有被注销时
+		{
+			destroyRegedHotKey( hwnd );					//注销模拟热键
+			UnregisterHotKey( hwnd, ID_HOT_WND_HIDE );	//注销主界面呼出热键
+			UnregisterHotKey( hwnd, ID_HOT_PAUSE );		//注销暂停\继续热键
+		}
+		PostQuitMessage( 0 );					return 0;
 	}
 
 	return DefWindowProc( hwnd, message, wParam, lParam );
@@ -60,8 +90,18 @@ void regVirtualMouseHotKey( HWND hwnd )
 	RegisterHotKey( hwnd, ID_HOT_MIDDLE_PRESS,	MOD_CONTROL, VK_DECIMAL );		//注册 Ctrl + . , 中键按下
 
 	RegisterHotKey( hwnd, ID_HOT_WND_HIDE,		MOD_CONTROL, VK_F12 );			//注册 Ctrl + 12 , 显示窗口
+	RegisterHotKey( hwnd, ID_HOT_PAUSE,			MOD_CONTROL, VK_F10 );			//注册 Ctrl + 10 , 暂停\继续热键
 }
 
+//////////////////////////////////////////////////////////////////////////
+
+//撤销注册的热键
+void destroyRegedHotKey( HWND hwnd )
+{
+	int hotID = ID_HOT_UP;
+	for( hotID; hotID <= ID_HOT_MIDDLE_PRESS; hotID++ )
+		UnregisterHotKey( hwnd, hotID );
+}
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -114,9 +154,12 @@ void dealWithHotKey( HWND hwnd, WPARAM wParam )
 		mouse_event( MOUSEEVENTF_MIDDLEDOWN, 0, 0, 0, 0 );
 		mouse_event( MOUSEEVENTF_MIDDLEUP, 0, 0, 0, 0 );
 
-	case ID_HOT_WND_HIDE:
+	case ID_HOT_WND_HIDE:		//呼出主界面
 		ShowWindow( hwnd, SW_SHOWNORMAL );
 		SetForegroundWindow(hwnd);	break;
+
+	case ID_HOT_PAUSE:			//暂停\继续热键
+		SendMessage( hwnd, WM_COMMAND, ID_BTN_PAUSE|BN_CLICKED, 0 );	break;
 	}
 	SetCursorPos( ptCorPos.x, ptCorPos.y );
 }
@@ -124,13 +167,60 @@ void dealWithHotKey( HWND hwnd, WPARAM wParam )
 //////////////////////////////////////////////////////////////////////////
 
 //处理按钮消息
-void dealWithBtnMsg( HWND hwnd,  WPARAM wParam )
+void dealWithBtnMsg( HWND hwnd,  WPARAM wParam, HWND *hBtn )
 {
+	char btnLab[10];
+
 	switch( LOWORD(wParam) )
 	{
 	case ID_BTN_HIDE:
 		ShowWindow( hwnd, SW_MINIMIZE );		//先最小化
 		ShowWindow( hwnd, SW_HIDE );			//再隐藏
 		break;
+
+	case ID_BTN_PAUSE:
+		GetWindowText( hBtn[0], btnLab, 10 );
+		if( strcmp( btnLab, "暂停模拟" ) == 0 )
+		{
+			destroyRegedHotKey( hwnd );
+			SetWindowText( hBtn[0], TEXT("继续模拟") );
+		}
+		else
+		{
+			regVirtualMouseHotKey( hwnd );
+			SetWindowText( hBtn[0], TEXT("暂停模拟") );
+		}
+		break;
+
+	case ID_BTN_EXIT:
+		SendMessage( hwnd, WM_DESTROY, 0, 0 );
+		break;
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+//绘制提示信息
+void drawTipText( HDC hdc )
+{
+	int i = 1, x = 10, y = 30;
+	TCHAR szTip[][128] = {
+		TEXT("注意: 以下数字均指小键盘数字。"),
+		TEXT("________________________________________"),
+		TEXT("移动指针: Ctrl + 1, 2, 3, 4, 6, 7, 8, 9"),
+		TEXT("小幅度移动: Ctrl + 方向键 上,下,左,右"),
+		TEXT("虚拟左键: Ctrl + 5"),
+		TEXT("虚拟右键: Ctrl + Enter"),
+		TEXT("虚拟中键: Ctrl + . (Del)"),
+		TEXT("滚轮向上: Ctrl + num -"),
+		TEXT("滚轮向下: Ctrl + num +"),
+		TEXT("暂停/继续模拟: Ctrl + F10"),
+		TEXT("唤出主界面: Ctrl + F12")
+	};
+	TextOut ( hdc, 10, 5, szTip[0], lstrlen (szTip[0]) ) ;
+	for( i; i < sizeof( szTip ) / sizeof( szTip[0] ); i++ )
+	{
+		TextOut ( hdc, x, y, szTip[i], lstrlen (szTip[i]) ) ;
+		y += 20;
 	}
 }

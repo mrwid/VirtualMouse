@@ -16,20 +16,24 @@
 #define		ID_HOT_SL_LEFT		10010			//微调, 左
 #define		ID_HOT_SL_RIGHT		10011			//微调, 右
 
-#define		ID_HOT_LEFT_CLICK	10100			//左击
-#define		ID_HOT_RIGHT_CLICK	10101			//右击
+#define		ID_HOT_LEFT_CLICK	10012			//左击
+#define		ID_HOT_RIGHT_CLICK	10013			//右击
 
-#define		ID_HOT_MIDDLE_UP	10200			//滚轮上
-#define		ID_HOT_MIDDLE_DOWN	10201			//滚轮下
+#define		ID_HOT_MIDDLE_UP	10014			//滚轮上
+#define		ID_HOT_MIDDLE_DOWN	10015			//滚轮下
 
-#define		ID_HOT_MIDDLE_PRESS	10300			//中键按下
-
-//////////////////////////////////////////////////////////////////////////
-
-#define		ID_BTN_PAUSE		10400			//暂停\继续模拟
-#define		ID_BTN_HIDE			10401			//隐藏模拟
-#define		ID_BTN_EXIT			10402			//退出模拟
+#define		ID_HOT_MIDDLE_PRESS	10016			//中键按下
 
 //////////////////////////////////////////////////////////////////////////
 
-#define		ID_HOT_WND_HIDE		10500			//隐藏\显示窗口
+#define		ID_HOT_WND_HIDE		10017			//隐藏\显示窗口
+#define		ID_HOT_PAUSE		10018			//暂停\继续热键
+
+//////////////////////////////////////////////////////////////////////////
+
+#define		ID_BTN_PAUSE		10100			//暂停\继续模拟
+#define		ID_BTN_HIDE			10101			//隐藏模拟
+#define		ID_BTN_EXIT			10102			//退出模拟
+
+//////////////////////////////////////////////////////////////////////////
+
