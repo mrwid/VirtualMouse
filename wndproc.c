@@ -14,7 +14,6 @@ LRESULT CALLBACK WndProc( HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam 
 	PAINTSTRUCT ps;
 	char		btnLab[10];
 	HFONT		hFont;
-	HDC			hdcStatic;
 
 	strcpy( lf.lfFaceName, "Arial" );
 	lf.lfWidth			= 6;
@@ -57,11 +56,15 @@ LRESULT CALLBACK WndProc( HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam 
 		EndPaint (hwnd, &ps) ;
 		return 0;
 
-	case WM_CTLCOLORSTATIC:				//处理超链接字体颜色
-        hdcStatic = (HDC) wParam;
-		SetTextColor(hdcStatic, RGB(0,0,255));
-		SetBkColor(hdcStatic, RGB(236, 233, 216));
-		return (INT_PTR) CreateSolidBrush( RGB(236, 233, 216) );
+	case WM_NOTIFY:						//处理超链接消息
+	  switch (((LPNMHDR)lParam)->code)
+	  {
+		  case NM_CLICK:
+		  case NM_RETURN:
+			ShellExecute( NULL, "open", "http://www.cnblogs.com/mr-wid/", NULL, NULL, SW_SHOW );
+			break;
+	  }
+	  return 0;
 
 	case WM_DESTROY:					//退出程序
 		GetWindowText( hBtn[0], btnLab, 10 );
@@ -214,10 +217,6 @@ void dealWithBtnMsg( HWND hwnd,  WPARAM wParam, HWND *hBtn )
 
 	case ID_ID_AUTORUN:			//处理开机自启动消息
 		VirtualMouseAutorun( hBtn[3] );
-		return ;
-
-	case ID_ID_HYPERLINK:		//处理超链接消息
-		ShellExecute( NULL, "open", "http://www.cnblogs.com/mr-wid/", NULL, NULL, SW_SHOW );
 		return ;
 	}
 }

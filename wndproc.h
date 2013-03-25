@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include <windows.h>
+#include <commctrl.h>
 #include <string.h>
 #include "constant.h"
 	

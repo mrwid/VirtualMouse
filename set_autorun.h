@@ -6,7 +6,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-int VirtualMouseAutorun( HWND );			//设置软件开机自启动
+int VirtualMouseAutorun( HWND );			//软件开机自启动
 
 int setVMAutorun();				//设置开机自动运行
 

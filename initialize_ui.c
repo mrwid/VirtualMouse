@@ -49,11 +49,11 @@ void InitWndUI( HWND hwnd, HINSTANCE hInstance, HWND *hwndBtn, HFONT hFont, LOGF
 	lf.lfHeight			= 12;
 	lf.lfUnderline		= 1;
 	hwndBtn[4] = CreateWindow(
-		TEXT("static"), TEXT("http://www.cnblogs.com/mr-wid"),
+		TEXT("syslink"), TEXT(""),
 		WS_CHILD|WS_VISIBLE|SS_NOTIFY,
 		10, 246, 180, 20,
 		hwnd, (HMENU)ID_ID_HYPERLINK, hInstance, 0
 	);
+	SetWindowText( hwndBtn[4], TEXT("<a href=\"\">http://www.cnblogs.com/mr-wid</a>") );
 	SendMessage( hwndBtn[4], WM_SETFONT, (WPARAM)CreateFontIndirect(&lf), 0 );
-	SendMessage( hwndBtn[4], WM_CTLCOLORSTATIC, 0, 0 );
 }
