@@ -15,7 +15,7 @@ Virtual Mouse - 虚拟鼠标。
 
 开发环境(Development Environment): Microsoft Visual C++ 6.0
 
-开源协议(Open License): GNU GPL v3
+开源协议(Open License): BSD
 
 ##使用帮助 - Help
 
