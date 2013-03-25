@@ -62,6 +62,52 @@ IDI_ICON_LEFT           ICON    DISCARDABLE     "icon_lef.ico"
 //
 
 1                       24      DISCARDABLE     "VirtualMouse.manifest"
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "wid\0"
+            VALUE "FileDescription", "ÐéÄâÊó±ê\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "VirtualMouse\0"
+            VALUE "LegalCopyright", "GNU GPL v3\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "VirtualMouse.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "VirtualMouse\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
+    END
+END
+
+#endif    // !_MAC
+
 #endif    // Chinese (ÖÐ¹ú) resources
 /////////////////////////////////////////////////////////////////////////////
 
